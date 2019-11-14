@@ -27,7 +27,7 @@ public class ServletContext implements WebMvcConfigurer{
 		registry.addResourceHandler("/resources/**")
 		.addResourceLocations("/resources/");
 	}
-	@Bean// 리턴되는 새끼 빈으로 만듬
+	@Bean 
 	public MultipartResolver multipartResolver() {
 		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
 		return resolver;
