@@ -1,10 +1,14 @@
 package com.mh.web.pxy;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,24 +26,25 @@ public class NaverCrawlingProxy extends Proxy{
 			crawling(Path.CRAWLING_TARGET.toString());
 			break;
 		default:
-			crawling("http://"+paramMap.get("site")+"/");
+			System.out.println("없음");
 			break;
 		}
 		return box;
 	}
-	private void crawling(String url) {
+	public Box<String> crawling(String url) {
 		p.accept("넘어온 url \n" + url);
 		box.clear();
 		try {
-			Connection.Response response = Jsoup.connect(url)
-											.method(Connection.Method.GET)
-											.execute();
-			Document document = response.parse();
-			String text = document.text();
-			p.accept(">>>>>네이버 사전 크롤링 내용: \n"+text);
-			box.add(text);
+			Document data = Jsoup.connect(url).timeout(10*1000).get();
+			Elements word = data.select("ul[class=component_today_word] li[class=item]");
+			List<String> word2 = new ArrayList<>();
+			for(Element e : word) {
+				box.add(word.next().text());
+			}
+			System.out.println(word2);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return box;
 	}
 }
