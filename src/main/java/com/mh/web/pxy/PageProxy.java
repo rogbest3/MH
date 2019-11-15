@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.mh.web.cgv.CGVService;
 //import com.moneyhub.web.brd.ArticleMapper;
 import com.mh.web.cmm.IFunction;
 import com.mh.web.cmm.ISupplier;
@@ -34,6 +35,7 @@ public class PageProxy extends Proxy{
 	private final int BLOCK_SIZE = 5;
 	private List<Integer> pages;
 	@Autowired Printer p;
+	@Autowired CGVService cgvService;
 //	@Autowired ArticleMapper articleMapper;
 	@SuppressWarnings("unused")
 	public void paging() {

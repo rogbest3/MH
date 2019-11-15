@@ -1,21 +1,17 @@
 var adm = adm || {}
 adm = (()=>{
 	const WHEN_ERR = '호출하는 JS 파일을 찾지 못했습니다.';	
-	let _, js, css, img, navi_js, navi_vue_js, brd_vue_js
+	let _, js, css, img, brd_vue_js
 	let init=()=>{
 		_ = $.ctx();
 		js = $.js();
 		css = $.css();
 		img = $.img();
-		navi_js = js+'/cmm/navi.js'
-		navi_vue_js = js + '/vue/navi_vue.js'
 		brd_vue_js = js + '/vue/brd_vue.js'
 	}
 	let onCreate=()=>{
 		init()
 		$.when(
-			$.getScript(navi_js),	
-			$.getScript(navi_vue_js),
 			$.getScript(brd_vue_js)
 		)
 		.done(()=>{
@@ -27,8 +23,6 @@ adm = (()=>{
 	}
 	let setContentView=()=>{
         $('body').empty()
-        $(navi_vue.nav()).appendTo('body')
-		navi.onCreate()
 		
 		$('<table id="tab" border="3">'+
 		  '  <tr>'+

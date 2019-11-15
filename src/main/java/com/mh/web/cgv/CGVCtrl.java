@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mh.web.pxy.Box;
+import com.mh.web.pxy.CrawlingProxy;
 import com.mh.web.pxy.Trunk;
 import com.mh.web.util.Printer;
 
@@ -21,16 +23,19 @@ public class CGVCtrl {
 	@Autowired Printer printer;
 	@Autowired Map<String, Object>map;
 	@Autowired Trunk<String> trunk;
+	@Autowired CGVService cgvService; 
+	@Autowired Box<String> box;
+	@Autowired CrawlingProxy crawler;
 	
-	@GetMapping("/crawling/{site}/srch")
-	public void cgvCrawer(@PathVariable String site, @PathVariable String srch) {
+	@GetMapping("/crawling/{site}/{srch}")
+	public Map<?, ?> cgvCrawer(@PathVariable String site, @PathVariable String srch) {
 		printer.accept("site=="+site+"srch=="+srch);
 		trunk.put(Arrays.asList("site","srch"),
                 Arrays.asList(site, srch));
+		cgvService.crawling(trunk.get());
+		trunk.put(Arrays.asList("total"),
+                Arrays.asList(box.toString()));
+		return trunk.get();
+		
 	}
-	
-	
-	
-	
-
 }

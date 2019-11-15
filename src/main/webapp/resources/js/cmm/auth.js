@@ -1,168 +1,120 @@
-"use strict";
+"use strict"
 var auth = auth || {};
-auth = (()=>{
-	const WHEN_ERR = '호출하는 JS 파일을 찾지 못했습니다.';	
-	let _, js, css, img, vue, brdvue, brd_js, router_js, cookie_js, adm_js;
-	
-	let init = () => {
-		_ = $.ctx();
-		js = $.js();
-		css = $.css();
-		img = $.img();
-		vue = js + '/vue/auth_vue.js';	//스트링값, 객체가 아니다
-		brdvue = js + '/vue/brd_vue.js';
-		brd_js = js + '/brd/brd.js';
-		router_js = js +'/cmm/router.js';
-		adm_js = js + '/adm/adm.js';
-		cookie_js = js +'/cmm/cookie.js';
-	}	
-	
-	let onCreate = () =>{
-        init()
-        $.when(
-        	$.getScript(vue),
-        	$.getScript(brd_js),
-        	$.getScript(router_js),
-        	$.getScript(cookie_js),
-        	$.getScript(adm_js)
-        )
-        .done(()=>{
-        	setContentView()
-    		$('#a_go_join').click(e=>{
-         		e.preventDefault()
-         		$('head').html(auth_vue.join_head())
-		        $('body').html(auth_vue.join_body())
-		        $('#clientid').keyup(()=>{
-		        	if($('#clientid').val().length > 2)
-		        		if(!existId($('#clientid').val())){}
-		        })		        
-		        $('<button>',{
-		            text : 'Continue to checkout',
-		            href : '#',
-		            click : e=>{            	
-		            	e.preventDefault(); 
-		            		join()            	
-		            }
-		        })
-		        .addClass('btn btn-primary btn-lg btn-block')
-		        .appendTo('#btn_join')         		
-    		})
-        }).fail(()=>{alert(WHEN_ERR)})
-    }
-	
-	let setContentView =()=>{
-		$('head').html(auth_vue.login_head({css: $.css(), img: $.img(),  js: $.js()}))
-        $('body').addClass('text-center')
-        .html(auth_vue.login_body({css: $.css(), img: $.img(),  js: $.js()}))
-		login()
-		access()
-    }
-	
-	let join =()=>{
-		init()
-    	let data = {cid : $('#clientid').val(), pwd : $('#password').val()}
-                $.ajax({                	
-			    	url : _+'/client/',
-			    	type : 'POST',
-			    	dataType : 'json',
-			    	data : JSON.stringify(data),
-			    	contentType : 'application/json',
-			    	success : d => {
-			    		if(d.msg==='SUCCESS'){ 
-			    			$('head').html(auth_vue.login_head({css: $.css(), img: $.img(),  js: $.js()}))
-			    	        $('body').addClass('text-center')
-			    	        .html(auth_vue.login_body({css: $.css(), img: $.img(),  js: $.js()}))
-			    			login() 
-			    		}
-			    		else 
-			    			alert('회원가입 실패')
-			    	},
-			    	error : e => {
-			    		alert('AJAX JOIN 실패')
-			    	}
-            	})
-            	.addClass('btn btn-primary btn-lg btn-block')
-		        .appendTo('#btn_join')  
-    }
-	
-	let existId = x => {
-		init()
-		$.ajax({
-			url : _ + '/client/' + x + '/exist',
-			contentType : 'application/json',
-			success : d => {
-				if(d.msg=='SUCCESS'){
-					$('#dupl_check')
-					.val('사용가능한 ID입니다.')
-					.css('color', 'blue')
-					return true;
-				}else{
-					$('#dupl_check')
-					.val('이미 존재하는 ID입니다.')
-					.css('color', 'red')
-					return false;
-				}
-			},
-			error : e => {
-				alert('AJAX fail')
-				return false;
-			}
-		})
+auth =(()=>{
+	const WHEN_ERR = '호출하는 JS 파일을 찾지 못했습니다.';
+	let _, js, css, img, auth_vue_js
+	let init =()=>{
+		_ = $.ctx()
+		js = $.js()
+		css = $.css()
+		img = $.img()
+		auth_vue_js = js + '/vue/auth_vue.js'
+
 	}
-	
-	let login =()=>{
-		init()        	
-        $('<button>',{
-        	type : "submit",
-        	text : "로그인",
-        	click : e => {
-        		e.preventDefault()           		
-        		let client = {cid: $('#cid').val(), pwd: $('#pwd').val() }        		
-	        	$.ajax({
-	        		url : _+'/client/'+client.cid, 
-	        		type : 'POST',
-				   	dataType : 'json',
-				   	data : JSON.stringify(client),
-				   	contentType : 'application/json',
-				   	success : d => {
-				   		setCookie("CLIENTID", d.cid)
-				   		alert('저장된 쿠키 : ' + getCookie("CLIENTID"))
-				   		brd.onCreate();
-				   	}, 
-				   	error : e => {
-				   		alert('AJAX 실패')
-				   	}
-	        	})
-        	}
-        })
-        .addClass('btn btn-lg btn-primary btn-block')
-    	.appendTo('#btn_login')	
-    }
-	
-	let access =()=>{
-		$('#a_go_admin').click(()=>{
-			let ok = confirm('사원입니까?')
-			if(ok){
-				let aid = prompt('사원번호를 입력하시오')
-				$.ajax({
-					url : _+'/admins/'+aid,
-					type : 'POST',
-					dataType : 'json',
-					data : JSON.stringify({aid:aid , pwd : prompt('비밀번호를 입력하시오')}),
-					contentType : 'application/json',
-					success : d => {
-						alert('AJAX성공')
-						adm.onCreate();
-					},
-					error : e => {
-						alert('AJAX실패')
-					}
-				})
-			}
-		})
+	let onCreate =()=>{
+		init()
+		$.when(
+    		$.getScript(auth_vue_js)
+    	)	
+    	.done(()=>{
+			setContentView()
+			$('#login_img_btn').click(e=>{
+				e.preventDefault()
+		    		   
+			})	
+		}).fail(()=>{alert(WHEN_ERR)})
+	}
+	let setContentView =()=>{	// 첫화면
+		bugsPage()
+	}
+
+	let bugsPage =()=>{
+
+		$('<main id="main" role="main" class="container">'+
+		'<table id="tab">'+
+		'  <tr>'+
+		'  </tr>'+
+		'</table>'+
+		'</main>')  // key값 무조건 string이기 때문에 '' 생량가능 value는 생략 불가, json이기때문에 , 로 속성 추가							
+		.appendTo('body')	// body에 오버로딩
+		.css({ width : '100%', height : '100%'}) 
+		$('#main table')
+		.css({ width : '80%', height : '80%', border :'2px solid black', margin: '0 auto', 'margin-top' : '8%' }) 
 		
+		$.each(
+			[{ id : 'left', width : '20%'}, 
+			{ id : 'right', width : '80%'}], 
+			(i, j)=>{
+			$('<td id="'+ j.id +'"></td>')
+			.css({border: '2px solid black', width: j.width, 'vertical-align': 'top'})
+			.appendTo('#tab tr')
+		})
+
+		$.each([	// name을 주고 구분
+			{txt : '벅스', name : 'bugs_crawl'},
+			{txt : '영화', name : 'cust_mgmt'}, 
+			{txt : '영어', name : 'trd_mgmt'}], 
+			(i, j)=>{
+				$('<div name="'+ j.name +'">'+ j.txt +'</div>')
+				.appendTo('#left')
+				.click(function(){
+					$(this).addClass('active')
+					$(this).siblings().removeClass('active')
+					switch($(this).attr('name')){
+					case 'bugs_crawl' :
+						bugs_crawl()						
+						break
+					case 'cust_mgmt' : 
+						cust_mgmt()
+						break
+
+					}
+			})
+		})
+		$('#left div').css({border: '2px solid black', margin: 'auto 0', 'line-height': '50px'})
+	}
+	let bugs_crawl =()=>{
+		$('#right').empty()
+		$('<form id="crawl_form_id" action="">'+
+		'</form>')
+		.addClass('form-inline my-2 my-lg-0')
+		.appendTo('#right')
+		$('#crawl_form_id').css({padding : '0 auto', 'padding-top' : '5%'  })	//'padding-top' : '5%' 
+		$('<button class="btn btn-outline-success my-2 my-sm-0" type="submit">이동</button>')
+		.appendTo('#crawl_form_id')
+		.click(e=>{
+			e.preventDefault()	
+			alert('더미')
+		})
 	}
 	
-	return {onCreate, join, login}
-	
+	let cust_mgmt =()=>{
+		$('#right').empty()
+        $('<h2>Web Crawling'+
+                '<form id="crawl_form" class="form-inline my-2 my-lg-0">'+
+                '  <select name="site" size="2">'+
+                '  </select>'+
+                '<input class="form-control mr-sm-2" type="text" value="CGV" placeholder="insert URL for crawling" aria-label="Search">'+
+                '</form>')
+        .appendTo('#right')
+        $('#crawl_form input[class="form-control mr-sm-2"]')
+        .css({width:'80%'})
+        $.each([{sub:'직접입력'},{sub:'naver.com'},{sub:'daum.net'}],(i,j)=>{
+            $('<option value='+j.sub+'>'+j.sub+'</option>').appendTo('#crawl_form select')
+        })
+        $('<button class="btn btn-secondary my-2 my-sm-0" type="submit">go crawl</button>')
+        .appendTo('#crawl_form')
+        .click(e=>{                              
+            e.preventDefault()
+            alert(_+'====<<<web')
+            $.getJSON(_
+                    +'/cgv/crawling/'+$('#crawl_form select[name="site"]').val()
+                    +'/'+$('form#crawl_form input[type="text"]').val(),
+                    d=>{
+                alert("성공성공")
+                alert(d.total+"===>site목록")
+            })
+        })
+	}
+	return{ onCreate }	// app에서 auth.onCreate() 호출했기 때문에 return에 onCreate 사용
 })();
